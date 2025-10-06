@@ -32,9 +32,7 @@
 
 (defn Request->map [^Request req]
   {:method (.getMethod req)
-   :params (.getParams req)
-   :body   (when-let [body (.getRawBody req)]
-             (String. body "UTF-8"))})
+   :params (.getParams req)})
 
 (defn ->request-handler [handler-fn]
   (proxy [RequestHandler] []
