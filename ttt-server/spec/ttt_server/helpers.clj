@@ -28,7 +28,7 @@
 (defn get-index [session-id]
   (let [req (doto (Request. "GET" "/" "HTTP/1.1")
               (.addHeader "Cookie" (str "sessionId=" session-id)))]
-    (.handle (http/->request-handler handlers/index-request-handler) req)))
+    (.handle (http/->request-handler handlers/game-request-handler) req)))
 
 (defn post-move [session-id row col]
   (doto (Request. "POST" "/move" "HTTP/1.1")

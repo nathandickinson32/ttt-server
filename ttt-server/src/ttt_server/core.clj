@@ -5,7 +5,7 @@
   (:import [server HttpServer]))
 
 (defn register-routes [^HttpServer server]
-  (.addHandler server "GET" "/" (http/->request-handler h/index-request-handler))
+  (.addHandler server "GET" "/" (http/->request-handler h/game-request-handler))
   (.addHandler server "POST" "/move" (http/->request-handler h/move-handler))
   (.addHandler server "POST" "/reset" (http/->request-handler h/reset-handler)))
 
