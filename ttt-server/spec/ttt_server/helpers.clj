@@ -45,4 +45,4 @@
 
 (defn apply-moves [session-id moves]
   (doseq [[row col] moves]
-    (swap! session/sessions update session-id game/update-game-state [row col])))
+    (swap! session/sessions update session-id game/update-or-ensure-game [row col])))

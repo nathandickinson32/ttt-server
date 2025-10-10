@@ -1,6 +1,5 @@
 (ns ttt-server.game-spec
   (:require [speclj.core :refer :all]
-            [ttt-server.game :as game]
             [ttt-server.helpers :as helper]))
 
 (describe "Tic Tac Toe Game Logic"

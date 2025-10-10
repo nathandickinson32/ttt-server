@@ -22,10 +22,14 @@
         draw      (board/full-board? board size)]
     (flag-end-game winner draw new-state)))
 
-(defn update-game-state [game move]
-  (if (and game (:board game))
-    (let [board (:board game)]
-      (if (invalid-move? board move (:winner game) (:draw game))
-        game
-        (->next-state game move)))
-    {:board starting-board :current-token :X :turn-count 0}))
+(defn update-game [{:keys [board winner draw] :as game} move]
+  (if (invalid-move? board move winner draw)
+    game
+    (->next-state game move)))
+
+(defn update-or-ensure-game [game move]
+  (if (:board game)
+    (update-game game move)
+    {:board         starting-board
+     :current-token :X
+     :turn-count    0}))

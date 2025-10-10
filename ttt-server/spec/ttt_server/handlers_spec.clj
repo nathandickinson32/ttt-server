@@ -1,5 +1,6 @@
 (ns ttt-server.handlers-spec
   (:require [speclj.core :refer :all]
+            [ttt-server.game :as game]
             [ttt-server.handlers :as handlers]
             [ttt-server.sessions :as session]
             [ttt-server.http :as http]
@@ -7,6 +8,23 @@
   (:import (server Request)))
 
 (describe "Tic Tac Toe Handlers"
+
+  (it "fallback handler"
+    (let [response (handlers/fallback-handler nil)]
+      (should= 404 (:status response))
+      (should= "<h1>Route Not Found</h1>" (:body response))))
+
+  (it "resets the session"
+    (reset! session/sessions {})
+    (let [request  {:session-id "the-session-id"}
+          response (handlers/reset-requested-game request)
+          game     (session/find-game "the-session-id")]
+      (should= 302 (:status response))
+      (should= "" (:body response))
+      (should= "/" (get-in response [:headers "Location"]))
+      (should= "sessionId=the-session-id" (get-in response [:headers "Set-Cookie"]))
+      (should= game/starting-board (:board game))
+      (should-be uuid? (:game-id game))))
 
   (context "Routing"
 
