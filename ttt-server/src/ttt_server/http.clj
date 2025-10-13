@@ -6,21 +6,24 @@
   (doseq [[k v] headers]
     (.addHeader response k v)))
 
-(defn ->Response [resp-map]
+(defn ->Response [response]
   (doto (Response.)
-    (.setStatusCode (:status resp-map))
-    (.setBody (:body resp-map))
-    (set-headers (:headers resp-map))))
+    (.setStatusCode (:status response))
+    (.setBody (:body response))
+    (set-headers (:headers response))))
 
 (defn Request->map [^Request request]
   {:method     (.getMethod request)
-   :params     (update-keys (.getParams request) keyword)
-   :headers    (.getHeaders request)
+   :path       (.getPath request)
+   :protocol   (.getProtocol request)
    :session-id (.getSessionId request)
    :raw-body   (.getRawBody request)
-   })
+   :params     (update-keys (.getParams request) keyword)
+   :headers    (.getHeaders request)
+   :cookies    (.getCookies request)})
 
-(defn ->request-handler [handler-fn]
+(defn ->request-handler [handler-fn database]
   (proxy [RequestHandler] []
     (handle [^Request request]
-      (-> request Request->map handler-fn ->Response))))
+      (let [request-map (-> request Request->map (assoc :database database))]
+        (-> request-map handler-fn ->Response)))))

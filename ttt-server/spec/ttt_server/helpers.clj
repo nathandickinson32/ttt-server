@@ -28,7 +28,7 @@
 (defn get-index [session-id]
   (let [req (doto (Request. "GET" "/" "HTTP/1.1")
               (.addHeader "Cookie" (str "sessionId=" session-id)))]
-    (.handle (http/->request-handler handlers/game-request-handler) req)))
+    (.handle (http/->request-handler handlers/game-request-handler :postgres) req)))
 
 (defn post-move [session-id row col]
   (doto (Request. "POST" "/move" "HTTP/1.1")
@@ -36,7 +36,7 @@
     (.addHeader "Cookie" (str "sessionId=" session-id))))
 
 (defn handler-apply-moves [session-id moves]
-  (let [handler (http/->request-handler handlers/move-handler)]
+  (let [handler (http/->request-handler handlers/move-handler :postgres)]
     (doseq [[row col] moves]
       (.handle handler (post-move session-id row col)))))
 

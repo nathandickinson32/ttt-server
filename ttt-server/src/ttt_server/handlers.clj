@@ -71,8 +71,8 @@
                                    (fn [session-id game]
                                      (handle-move session-id game params)))))
 
-(defn reset-requested-game [{:keys [session-id]}]
-  (session/reset-session session-id)
+(defn reset-requested-game [{:keys [session-id]} database]
+  (session/reset-session session-id database)
   {:status  302
    :headers {"Location"   "/"
              "Set-Cookie" (str "sessionId=" session-id)}
@@ -80,7 +80,7 @@
 
 (defn reset-handler [request]
   (let [session-id (session/find-or-create-session-id request)]
-    (reset-requested-game {:session-id session-id})))
+    (reset-requested-game {:session-id session-id} (:database request))))
 
 (defn fallback-handler [_]
   {:status 404
