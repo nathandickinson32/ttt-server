@@ -1,6 +1,5 @@
 (ns ttt-server.sessions
-  (:require [clojure.string :as str]
-            [ttt-server.game :as game]))
+  (:require [ttt-server.game :as game]))
 
 (defonce sessions (atom {}))
 
@@ -12,19 +11,13 @@
    :X             :human
    :O             :human
    :turn-count    0
-   :database database})
+   :database      database})
 
 (defn new-session-id []
   (str (random-uuid)))
 
-(defn parse-session-id [request]
-  (when-let [cookie-header (get-in request [:headers "Cookie"])]
-    (->> (str/split cookie-header #";")
-         (some #(when (str/starts-with? % "sessionId=")
-                  (second (str/split % #"=")))))))
-
 (defn find-or-create-session-id [request]
-  (or (parse-session-id request)
+  (or (:session-id request)
       (new-session-id)))
 
 (defn find-game [session-id database]

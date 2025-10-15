@@ -12,6 +12,11 @@
                           (swap! handlers assoc path handler)))]
       (sut/register-routes mock-server :postgres)
       (should-contain "/" (keys @handlers))
+      (should-contain "/start" (keys @handlers))
       (should-contain "/move" (keys @handlers))
-      (should-contain "/reset" (keys @handlers))))
+      (should-contain "/reset" (keys @handlers))
+      (should-contain "/select-player-x" (keys @handlers))
+      (should-contain "/select-player-o" (keys @handlers))
+      (should-contain "/choose-first-player" (keys @handlers))
+      ))
   )
