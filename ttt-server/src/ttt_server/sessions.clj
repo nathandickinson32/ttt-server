@@ -5,7 +5,7 @@
 
 (defn new-game-state [database]
   {:game-id       (random-uuid)
-   :board         game/starting-board
+   :board         (game/starting-board :3x3)
    :board-size    game/default-board-size
    :current-token :X
    :X             :human

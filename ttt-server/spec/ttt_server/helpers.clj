@@ -13,7 +13,7 @@
 (defn reset-session [session-id]
   (swap! session/sessions assoc session-id
          {:game-id       (random-uuid)
-          :board         game/starting-board
+          :board         (game/starting-board :3x3)
           :board-size    game/default-board-size
           :current-token :X
           :X             :human

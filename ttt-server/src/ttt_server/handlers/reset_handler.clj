@@ -4,7 +4,8 @@
 (defn reset-requested-game [{:keys [session-id]} database]
   (session/reset-session session-id database)
   {:status  302
-   :headers {"Location" "/" "Set-Cookie" (str "sessionId=" session-id)}
+   :headers {"Location"   "/"
+             "Set-Cookie" (str "sessionId=" session-id)}
    :body    ""})
 
 (defn reset-handler [request]

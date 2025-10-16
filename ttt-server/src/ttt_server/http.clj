@@ -25,5 +25,7 @@
 (defn ->request-handler [handler-fn database]
   (proxy [RequestHandler] []
     (handle [^Request request]
-      (let [request-map (-> request Request->map (assoc :database database))]
+      (let [request-map (-> request
+                            Request->map
+                            (assoc :database database))]
         (-> request-map handler-fn ->Response)))))

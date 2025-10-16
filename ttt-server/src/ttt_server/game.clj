@@ -2,8 +2,9 @@
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.game :as game]))
 
-(def starting-board
-  (vec (repeat 3 (vec (repeat 3 nil)))))
+(defn starting-board [size]
+  (let [size (if (= size :4x4) 4 3)]
+    (vec (repeat size (vec (repeat size nil))))))
 
 (def default-board-size :3x3)
 
@@ -30,6 +31,6 @@
 (defn update-or-ensure-game [game move]
   (if (:board game)
     (update-game game move)
-    {:board         starting-board
+    {:board         (starting-board (name (:board-size game)))
      :current-token :X
      :turn-count    0}))

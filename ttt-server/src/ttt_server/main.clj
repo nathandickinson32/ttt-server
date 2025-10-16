@@ -9,14 +9,18 @@
             [ttt-server.handlers.choose-board :as choose-board])
   (:import [server HttpServer]))
 
+(def handlers
+  {["GET" "/"]                    choose-board/welcome-request-handler
+   ["GET" "/start"]               game/game-request-handler
+   ["GET" "/select-player-x"]     choose-player/select-player-x-handler
+   ["GET" "/select-player-o"]     choose-player/select-player-o-handler
+   ["GET" "/choose-first-player"] first-player/choose-first-player-handler
+   ["POST" "/move"]               game/move-handler
+   ["POST" "/reset"]              reset/reset-handler})
+
 (defn register-routes [^HttpServer server database]
-  (.addHandler server "GET" "/" (http/->request-handler choose-board/welcome-request-handler database))
-  (.addHandler server "GET" "/select-player-x" (http/->request-handler choose-player/select-player-x-handler database))
-  (.addHandler server "GET" "/select-player-o" (http/->request-handler choose-player/select-player-o-handler database))
-  (.addHandler server "GET" "/choose-first-player" (http/->request-handler first-player/choose-first-player-handler database))
-  (.addHandler server "GET" "/start" (http/->request-handler game/game-request-handler database))
-  (.addHandler server "POST" "/move" (http/->request-handler game/move-handler database))
-  (.addHandler server "POST" "/reset" (http/->request-handler reset/reset-handler database)))
+  (doseq [[[method route] handler] handlers]
+    (.addHandler server method route (http/->request-handler handler database))))
 
 (defn -main [& args]
   (let [database (if (some #(= "--edn" %) args) :edn-file :postgres)

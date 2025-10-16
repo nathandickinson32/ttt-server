@@ -39,6 +39,26 @@
         (should= 1 (.size (.getHeaders resp)))))
     )
 
+  (context "Request->map"
+
+    (it "converts a Request object into a Clojure map"
+      (let [request (doto (Request. "POST" "/submit" "HTTP/1.1")
+                      (.setSessionId "abc123")
+                      (.setRawBody (.getBytes "data=example"))
+                      (.setParams {"name" "Nathan" "age" "30"})
+                      (.setHeaders {"Content-Type" "application/json"})
+                      (.setCookies {"token" "cookie123"}))
+            result  (http/Request->map request)]
+        (should= "POST" (:method result))
+        (should= "/submit" (:path result))
+        (should= "HTTP/1.1" (:protocol result))
+        (should= "abc123" (:session-id result))
+        (should= "data=example" (String. ^bytes (:raw-body result)))
+        (should= {:name "Nathan" :age "30"} (:params result))
+        (should= {"Content-Type" "application/json"} (:headers result))
+        (should= {"token" "cookie123"} (:cookies result))))
+    )
+
   (context "->request-handler"
 
     (it "wraps a handler function into a RequestHandler returning a Response"
@@ -52,5 +72,20 @@
         (should= 200 (.getStatusCode resp))
         (should= "Hello" (.getBody resp))
         (should= "text/plain" (.get (.getHeaders resp) "Content-Type"))))
+
+    (it "converts a Request into a Response with handler-fn and adds database to request-map"
+      (let [handler-fn      (fn [request-map]
+                              (should= :postgres (:database request-map))
+                              {:status  201
+                               :body    (str "Handled " (:path request-map))
+                               :headers {"X-Test" "Passed"}})
+            request-handler (http/->request-handler handler-fn :postgres)
+            request         (doto (Request. "GET" "/path" "HTTP/1.1")
+                              (.setSessionId "s1")
+                              (.setParams {"id" "42"}))
+            response        (.handle request-handler request)]
+        (should= 201 (.getStatusCode response))
+        (should= "Handled /path" (.getBody response))
+        (should= "Passed" (.get (.getHeaders response) "X-Test"))))
     )
   )
